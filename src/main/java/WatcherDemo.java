@@ -16,7 +16,7 @@ public class WatcherDemo {
                 connectString(CONNECTION_STR).sessionTimeoutMs(5000).
                 retryPolicy(new ExponentialBackoffRetry(1000, 3)).build();
         curatorFramework.start();
-        addListenerWithChild(curatorFramework);
+        addListenerWithTree(curatorFramework);
 
         System.in.read();
 
@@ -40,10 +40,10 @@ public class WatcherDemo {
         // 缓存数据
         PathChildrenCacheListener pathChildrenCacheListener = ( curatorFramework1, pathChildrenCacheEvent ) ->
                 System.out.println("事件路径:" + pathChildrenCacheEvent.getData().getPath() + "事件类型"
-                        + pathChildrenCacheEvent.getType()+"事件数据:" + pathChildrenCacheEvent.getData().getData());
+                        + pathChildrenCacheEvent.getType()+"事件数据:" + new String(pathChildrenCacheEvent.getData().getData()));
         CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder().forPathChildrenCache("/watch",curatorFramework, pathChildrenCacheListener ).build();
         curatorCache.listenable().addListener( curatorCacheListener );
-        curatorCache.start();
+        curatorCache.start( );
     }
 
     //实现服务注册中心的时候，可以针对服务做动态感知
@@ -52,7 +52,7 @@ public class WatcherDemo {
         // 缓存数据
         TreeCacheListener treeCacheListener = ( curatorFramework1, treeCacheEvent ) ->
                 System.out.println("事件路径:" + treeCacheEvent.getData().getPath() + "事件类型"
-                + treeCacheEvent.getType()+"事件数据:" + treeCacheEvent.getData().getData());
+                + treeCacheEvent.getType()+"事件数据:" + new String(treeCacheEvent.getData().getData()));
         CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder().forTreeCache(curatorFramework, treeCacheListener ).build();
         curatorCache.listenable().addListener( curatorCacheListener );
         curatorCache.start();
